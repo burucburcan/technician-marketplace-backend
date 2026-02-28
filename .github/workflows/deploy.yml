@@ -1,0 +1,53 @@
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy-backend:
+    name: Deploy Backend
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Build backend
+        run: npm run build --workspace=@technician-marketplace/backend
+      
+      - name: Deploy to production
+        run: echo "Deploy backend to production server"
+        # Add your deployment steps here (e.g., AWS, Docker, Kubernetes)
+
+  deploy-web-frontend:
+    name: Deploy Web Frontend
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Build web frontend
+        run: npm run build --workspace=@technician-marketplace/web-frontend
+      
+      - name: Deploy to production
+        run: echo "Deploy web frontend to production server"
+        # Add your deployment steps here (e.g., Vercel, Netlify, S3)

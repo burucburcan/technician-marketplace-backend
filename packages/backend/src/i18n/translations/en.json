@@ -1,0 +1,37 @@
+{
+  "common": {
+    "welcome": "Welcome",
+    "error": "Error",
+    "success": "Success"
+  },
+  "auth": {
+    "login": "Login",
+    "register": "Register",
+    "logout": "Logout",
+    "emailVerified": "Email verified",
+    "passwordReset": "Reset password"
+  },
+  "user": {
+    "profile": "Profile",
+    "preferences": "Preferences",
+    "language": "Language",
+    "notifications": "Notifications"
+  },
+  "professional": {
+    "profile": "Professional profile",
+    "specializations": "Specializations",
+    "certificates": "Certificates",
+    "portfolio": "Portfolio"
+  },
+  "booking": {
+    "create": "Create booking",
+    "confirm": "Confirm",
+    "cancel": "Cancel",
+    "status": "Status"
+  },
+  "validation": {
+    "required": "This field is required",
+    "invalid": "Invalid value",
+    "languageInvalid": "Language must be either 'es' or 'en'"
+  }
+}

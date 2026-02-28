@@ -1,0 +1,37 @@
+{
+  "common": {
+    "welcome": "Bienvenido",
+    "error": "Error",
+    "success": "Éxito"
+  },
+  "auth": {
+    "login": "Iniciar sesión",
+    "register": "Registrarse",
+    "logout": "Cerrar sesión",
+    "emailVerified": "Correo electrónico verificado",
+    "passwordReset": "Restablecer contraseña"
+  },
+  "user": {
+    "profile": "Perfil",
+    "preferences": "Preferencias",
+    "language": "Idioma",
+    "notifications": "Notificaciones"
+  },
+  "professional": {
+    "profile": "Perfil profesional",
+    "specializations": "Especializaciones",
+    "certificates": "Certificados",
+    "portfolio": "Portafolio"
+  },
+  "booking": {
+    "create": "Crear reserva",
+    "confirm": "Confirmar",
+    "cancel": "Cancelar",
+    "status": "Estado"
+  },
+  "validation": {
+    "required": "Este campo es obligatorio",
+    "invalid": "Valor inválido",
+    "languageInvalid": "El idioma debe ser 'es' o 'en'"
+  }
+}

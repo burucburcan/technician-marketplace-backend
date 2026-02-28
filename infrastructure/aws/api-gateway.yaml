@@ -1,0 +1,295 @@
+# AWS API Gateway Configuration (CloudFormation Template)
+# Alternative to Nginx for AWS deployments
+
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'API Gateway for Technician Marketplace Platform'
+
+Parameters:
+  Environment:
+    Type: String
+    Default: production
+    AllowedValues:
+      - development
+      - staging
+      - production
+    Description: Deployment environment
+  
+  BackendURL:
+    Type: String
+    Description: Backend service URL (ALB or ECS service)
+  
+  DomainName:
+    Type: String
+    Default: api.technician-marketplace.com
+    Description: Custom domain name for API Gateway
+
+Resources:
+  # API Gateway REST API
+  TechnicianMarketplaceAPI:
+    Type: AWS::ApiGateway::RestApi
+    Properties:
+      Name: !Sub 'technician-marketplace-api-${Environment}'
+      Description: API Gateway for Technician Marketplace Platform
+      EndpointConfiguration:
+        Types:
+          - REGIONAL
+      Policy:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal: '*'
+            Action: 'execute-api:Invoke'
+            Resource: '*'
+
+  # API Gateway Deployment
+  APIDeployment:
+    Type: AWS::ApiGateway::Deployment
+    DependsOn:
+      - APIProxyMethod
+      - APIOptionsMethod
+    Properties:
+      RestApiId: !Ref TechnicianMarketplaceAPI
+      StageName: !Ref Environment
+
+  # API Gateway Stage
+  APIStage:
+    Type: AWS::ApiGateway::Stage
+    Properties:
+      RestApiId: !Ref TechnicianMarketplaceAPI
+      DeploymentId: !Ref APIDeployment
+      StageName: !Ref Environment
+      Description: !Sub '${Environment} stage'
+      TracingEnabled: true
+      MethodSettings:
+        - ResourcePath: '/*'
+          HttpMethod: '*'
+          LoggingLevel: INFO
+          DataTraceEnabled: true
+          MetricsEnabled: true
+          ThrottlingBurstLimit: 5000
+          ThrottlingRateLimit: 2000
+
+  # Usage Plan for Rate Limiting
+  APIUsagePlan:
+    Type: AWS::ApiGateway::UsagePlan
+    DependsOn: APIStage
+    Properties:
+      UsagePlanName: !Sub 'technician-marketplace-${Environment}-plan'
+      Description: Usage plan with rate limiting
+      ApiStages:
+        - ApiId: !Ref TechnicianMarketplaceAPI
+          Stage: !Ref Environment
+      Throttle:
+        BurstLimit: 5000
+        RateLimit: 2000
+      Quota:
+        Limit: 1000000
+        Period: MONTH
+
+  # API Key for authenticated access
+  APIKey:
+    Type: AWS::ApiGateway::ApiKey
+    Properties:
+      Name: !Sub 'technician-marketplace-${Environment}-key'
+      Description: API Key for authenticated access
+      Enabled: true
+
+  # Associate API Key with Usage Plan
+  UsagePlanKey:
+    Type: AWS::ApiGateway::UsagePlanKey
+    Properties:
+      KeyId: !Ref APIKey
+      KeyType: API_KEY
+      UsagePlanId: !Ref APIUsagePlan
+
+  # Root Resource (/)
+  APIRootResource:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      RestApiId: !Ref TechnicianMarketplaceAPI
+      ParentId: !GetAtt TechnicianMarketplaceAPI.RootResourceId
+      PathPart: 'api'
+
+  # Proxy Resource ({proxy+})
+  APIProxyResource:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      RestApiId: !Ref TechnicianMarketplaceAPI
+      ParentId: !Ref APIRootResource
+      PathPart: '{proxy+}'
+
+  # HTTP Integration with Backend
+  APIProxyMethod:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      RestApiId: !Ref TechnicianMarketplaceAPI
+      ResourceId: !Ref APIProxyResource
+      HttpMethod: ANY
+      AuthorizationType: NONE
+      RequestParameters:
+        method.request.path.proxy: true
+      Integration:
+        Type: HTTP_PROXY
+        IntegrationHttpMethod: ANY
+        Uri: !Sub '${BackendURL}/{proxy}'
+        PassthroughBehavior: WHEN_NO_MATCH
+        RequestParameters:
+          integration.request.path.proxy: method.request.path.proxy
+        IntegrationResponses:
+          - StatusCode: 200
+            ResponseParameters:
+              method.response.header.Access-Control-Allow-Origin: "'*'"
+      MethodResponses:
+        - StatusCode: 200
+          ResponseParameters:
+            method.response.header.Access-Control-Allow-Origin: true
+
+  # OPTIONS method for CORS
+  APIOptionsMethod:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      RestApiId: !Ref TechnicianMarketplaceAPI
+      ResourceId: !Ref APIProxyResource
+      HttpMethod: OPTIONS
+      AuthorizationType: NONE
+      Integration:
+        Type: MOCK
+        IntegrationResponses:
+          - StatusCode: 200
+            ResponseParameters:
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+              method.response.header.Access-Control-Allow-Methods: "'GET,POST,PUT,DELETE,PATCH,OPTIONS'"
+              method.response.header.Access-Control-Allow-Origin: "'*'"
+            ResponseTemplates:
+              application/json: ''
+        RequestTemplates:
+          application/json: '{"statusCode": 200}'
+      MethodResponses:
+        - StatusCode: 200
+          ResponseParameters:
+            method.response.header.Access-Control-Allow-Headers: true
+            method.response.header.Access-Control-Allow-Methods: true
+            method.response.header.Access-Control-Allow-Origin: true
+
+  # Custom Domain Name
+  APIDomainName:
+    Type: AWS::ApiGateway::DomainName
+    Properties:
+      DomainName: !Ref DomainName
+      RegionalCertificateArn: !Ref ACMCertificate
+      EndpointConfiguration:
+        Types:
+          - REGIONAL
+
+  # Base Path Mapping
+  APIBasePathMapping:
+    Type: AWS::ApiGateway::BasePathMapping
+    DependsOn: APIStage
+    Properties:
+      DomainName: !Ref APIDomainName
+      RestApiId: !Ref TechnicianMarketplaceAPI
+      Stage: !Ref Environment
+
+  # ACM Certificate for Custom Domain
+  ACMCertificate:
+    Type: AWS::CertificateManager::Certificate
+    Properties:
+      DomainName: !Ref DomainName
+      ValidationMethod: DNS
+      DomainValidationOptions:
+        - DomainName: !Ref DomainName
+          ValidationDomain: !Ref DomainName
+
+  # CloudWatch Log Group for API Gateway
+  APILogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub '/aws/apigateway/technician-marketplace-${Environment}'
+      RetentionInDays: 30
+
+  # WAF Web ACL for API Gateway
+  APIWebACL:
+    Type: AWS::WAFv2::WebACL
+    Properties:
+      Name: !Sub 'technician-marketplace-api-${Environment}-waf'
+      Scope: REGIONAL
+      DefaultAction:
+        Allow: {}
+      Rules:
+        # Rate limiting rule
+        - Name: RateLimitRule
+          Priority: 1
+          Statement:
+            RateBasedStatement:
+              Limit: 2000
+              AggregateKeyType: IP
+          Action:
+            Block: {}
+          VisibilityConfig:
+            SampledRequestsEnabled: true
+            CloudWatchMetricsEnabled: true
+            MetricName: RateLimitRule
+        
+        # SQL Injection protection
+        - Name: SQLInjectionRule
+          Priority: 2
+          Statement:
+            ManagedRuleGroupStatement:
+              VendorName: AWS
+              Name: AWSManagedRulesSQLiRuleSet
+          OverrideAction:
+            None: {}
+          VisibilityConfig:
+            SampledRequestsEnabled: true
+            CloudWatchMetricsEnabled: true
+            MetricName: SQLInjectionRule
+        
+        # XSS protection
+        - Name: XSSRule
+          Priority: 3
+          Statement:
+            ManagedRuleGroupStatement:
+              VendorName: AWS
+              Name: AWSManagedRulesKnownBadInputsRuleSet
+          OverrideAction:
+            None: {}
+          VisibilityConfig:
+            SampledRequestsEnabled: true
+            CloudWatchMetricsEnabled: true
+            MetricName: XSSRule
+      VisibilityConfig:
+        SampledRequestsEnabled: true
+        CloudWatchMetricsEnabled: true
+        MetricName: !Sub 'technician-marketplace-${Environment}-waf'
+
+  # Associate WAF with API Gateway
+  APIWebACLAssociation:
+    Type: AWS::WAFv2::WebACLAssociation
+    Properties:
+      ResourceArn: !Sub 'arn:aws:apigateway:${AWS::Region}::/restapis/${TechnicianMarketplaceAPI}/stages/${Environment}'
+      WebACLArn: !GetAtt APIWebACL.Arn
+
+Outputs:
+  APIGatewayURL:
+    Description: API Gateway URL
+    Value: !Sub 'https://${TechnicianMarketplaceAPI}.execute-api.${AWS::Region}.amazonaws.com/${Environment}'
+    Export:
+      Name: !Sub '${AWS::StackName}-APIGatewayURL'
+
+  CustomDomainURL:
+    Description: Custom Domain URL
+    Value: !Sub 'https://${DomainName}'
+    Export:
+      Name: !Sub '${AWS::StackName}-CustomDomainURL'
+
+  APIKeyId:
+    Description: API Key ID
+    Value: !Ref APIKey
+    Export:
+      Name: !Sub '${AWS::StackName}-APIKeyId'
+
+  WebACLArn:
+    Description: WAF Web ACL ARN
+    Value: !GetAtt APIWebACL.Arn
+    Export:
+      Name: !Sub '${AWS::StackName}-WebACLArn'

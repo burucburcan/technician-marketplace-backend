@@ -1,0 +1,15 @@
+# Cypress artifacts
+videos/
+screenshots/
+downloads/
+
+# Cypress cache
+.cache/
+
+# Test results
+results/
+reports/
+
+# Coverage
+coverage/
+.nyc_output/

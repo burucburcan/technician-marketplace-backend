@@ -1,0 +1,35 @@
+{
+  "name": "technician-marketplace-platform",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "test": "turbo run test",
+    "lint": "turbo run lint",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down",
+    "docker:logs": "docker-compose logs -f"
+  },
+  "devDependencies": {
+    "prettier": "^3.2.5",
+    "turbo": "^1.13.0",
+    "typescript": "^5.3.3"
+  },
+  "engines": {
+    "node": ">=20.0.0",
+    "npm": ">=10.0.0"
+  },
+  "dependencies": {
+    "@nestjs/schedule": "^6.1.1",
+    "@types/multer": "^2.0.0",
+    "@types/supertest": "^6.0.3",
+    "mongoose": "^9.2.1",
+    "stripe": "^20.3.1",
+    "supertest": "^7.2.2"
+  }
+}

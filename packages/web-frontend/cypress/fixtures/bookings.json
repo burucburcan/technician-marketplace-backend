@@ -1,0 +1,38 @@
+{
+  "testBooking": {
+    "serviceCategory": "Electricidad",
+    "scheduledDate": "2024-02-15T10:00:00Z",
+    "estimatedDuration": 120,
+    "serviceAddress": {
+      "address": "Av. Reforma 123",
+      "city": "Ciudad de México",
+      "state": "CDMX",
+      "country": "México",
+      "postalCode": "06600"
+    },
+    "description": "Instalación de lámpara en sala",
+    "estimatedPrice": 500
+  },
+  "artistBooking": {
+    "serviceCategory": "Pintura mural",
+    "scheduledDate": "2024-02-20T09:00:00Z",
+    "estimatedDuration": 480,
+    "serviceAddress": {
+      "address": "Calle Juárez 456",
+      "city": "Guadalajara",
+      "state": "Jalisco",
+      "country": "México",
+      "postalCode": "44100"
+    },
+    "description": "Mural decorativo en pared principal",
+    "projectDetails": {
+      "projectType": "Mural decorativo",
+      "estimatedDuration": "3-5 días",
+      "priceRange": {
+        "min": 5000,
+        "max": 8000,
+        "currency": "MXN"
+      }
+    }
+  }
+}

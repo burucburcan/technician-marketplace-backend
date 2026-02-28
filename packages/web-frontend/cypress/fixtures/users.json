@@ -1,0 +1,33 @@
+{
+  "testUser": {
+    "firstName": "Test",
+    "lastName": "User",
+    "email": "testuser@example.com",
+    "password": "TestPassword123!",
+    "phone": "+52 55 1234 5678"
+  },
+  "testProfessional": {
+    "firstName": "John",
+    "lastName": "Technician",
+    "email": "john.tech@example.com",
+    "password": "TechPassword123!",
+    "professionalType": "handyman",
+    "specializations": ["Electricidad", "Plomería"],
+    "experienceYears": 5,
+    "hourlyRate": 250
+  },
+  "testArtist": {
+    "firstName": "Maria",
+    "lastName": "Artist",
+    "email": "maria.artist@example.com",
+    "password": "ArtPassword123!",
+    "professionalType": "artist",
+    "specializations": ["Pintura mural", "Decoración"],
+    "experienceYears": 8,
+    "artStyle": ["Moderno", "Abstracto"]
+  },
+  "testAdmin": {
+    "email": "admin@example.com",
+    "password": "AdminPassword123!"
+  }
+}

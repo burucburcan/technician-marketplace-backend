@@ -1,0 +1,59 @@
+{
+  "professionals": [
+    {
+      "id": "prof-1",
+      "firstName": "Carlos",
+      "lastName": "Electricista",
+      "professionalType": "handyman",
+      "specializations": ["Electricidad"],
+      "experienceYears": 10,
+      "hourlyRate": 300,
+      "rating": 4.8,
+      "totalJobs": 150,
+      "location": {
+        "city": "Ciudad de México",
+        "coordinates": {
+          "latitude": 19.4326,
+          "longitude": -99.1332
+        }
+      }
+    },
+    {
+      "id": "prof-2",
+      "firstName": "Ana",
+      "lastName": "Plomera",
+      "professionalType": "handyman",
+      "specializations": ["Plomería"],
+      "experienceYears": 7,
+      "hourlyRate": 280,
+      "rating": 4.9,
+      "totalJobs": 120,
+      "location": {
+        "city": "Ciudad de México",
+        "coordinates": {
+          "latitude": 19.4326,
+          "longitude": -99.1332
+        }
+      }
+    },
+    {
+      "id": "artist-1",
+      "firstName": "Diego",
+      "lastName": "Muralista",
+      "professionalType": "artist",
+      "specializations": ["Pintura mural", "Arte urbano"],
+      "experienceYears": 12,
+      "artStyle": ["Realista", "Surrealista"],
+      "rating": 4.9,
+      "totalJobs": 85,
+      "portfolio": [
+        {
+          "id": "port-1",
+          "imageUrl": "/images/portfolio/mural1.jpg",
+          "title": "Mural Histórico",
+          "category": "Pintura mural"
+        }
+      ]
+    }
+  ]
+}
