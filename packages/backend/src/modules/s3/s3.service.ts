@@ -12,8 +12,9 @@ import * as sharp from 'sharp'
 
 @Injectable()
 export class S3Service {
-  private s3Client: S3Client
-  private bucketName: string
+  private s3Client: S3Client | null = null
+  private bucketName: string = ''
+  private isConfigured: boolean = false
 
   constructor(private configService: ConfigService) {
     const accessKeyId = this.configService.get<string>('AWS_ACCESS_KEY_ID')
@@ -22,7 +23,8 @@ export class S3Service {
     const bucketName = this.configService.get<string>('AWS_S3_BUCKET_NAME')
 
     if (!accessKeyId || !secretAccessKey || !bucketName) {
-      throw new Error('AWS credentials and bucket name must be configured')
+      console.warn('AWS S3 not configured. File upload features will be disabled.')
+      return
     }
 
     this.s3Client = new S3Client({
@@ -33,9 +35,17 @@ export class S3Service {
       },
     })
     this.bucketName = bucketName
+    this.isConfigured = true
+  }
+
+  private checkConfiguration(): void {
+    if (!this.isConfigured || !this.s3Client) {
+      throw new Error('S3 service is not configured. Please configure AWS credentials.')
+    }
   }
 
   async uploadProfilePhoto(userId: string, file: Express.Multer.File): Promise<string> {
+    this.checkConfiguration()
     const fileExtension = file.originalname.split('.').pop()
     const fileName = `profile-photos/${userId}/${uuidv4()}.${fileExtension}`
 
@@ -46,18 +56,19 @@ export class S3Service {
       ContentType: file.mimetype,
     })
 
-    await this.s3Client.send(command)
+    await this.s3Client!.send(command)
     return `https://${this.bucketName}.s3.amazonaws.com/${fileName}`
   }
 
   async deleteProfilePhoto(userId: string): Promise<void> {
+    this.checkConfiguration()
     // List all objects with the user's profile photo prefix
     const listCommand = new ListObjectsV2Command({
       Bucket: this.bucketName,
       Prefix: `profile-photos/${userId}/`,
     })
 
-    const objects = await this.s3Client.send(listCommand)
+    const objects = await this.s3Client!.send(listCommand)
 
     if (objects.Contents && objects.Contents.length > 0) {
       const deleteCommand = new DeleteObjectsCommand({
@@ -67,11 +78,12 @@ export class S3Service {
         },
       })
 
-      await this.s3Client.send(deleteCommand)
+      await this.s3Client!.send(deleteCommand)
     }
   }
 
   async uploadCertificate(professionalId: string, file: Express.Multer.File): Promise<string> {
+    this.checkConfiguration()
     const fileExtension = file.originalname.split('.').pop()
     const fileName = `certificates/${professionalId}/${uuidv4()}.${fileExtension}`
 
@@ -82,11 +94,12 @@ export class S3Service {
       ContentType: file.mimetype,
     })
 
-    await this.s3Client.send(command)
+    await this.s3Client!.send(command)
     return `https://${this.bucketName}.s3.amazonaws.com/${fileName}`
   }
 
   async uploadPortfolioImage(artistId: string, file: Express.Multer.File): Promise<string> {
+    this.checkConfiguration()
     const fileExtension = file.originalname.split('.').pop()
     const fileName = `portfolio/${artistId}/${uuidv4()}.${fileExtension}`
 
@@ -97,7 +110,7 @@ export class S3Service {
       ContentType: file.mimetype,
     })
 
-    await this.s3Client.send(command)
+    await this.s3Client!.send(command)
     return `https://${this.bucketName}.s3.amazonaws.com/${fileName}`
   }
 
@@ -109,6 +122,7 @@ export class S3Service {
     artistId: string,
     file: Express.Multer.File
   ): Promise<{ imageUrl: string; thumbnailUrl: string }> {
+    this.checkConfiguration()
     const fileId = uuidv4()
 
     // Optimize full-size image (max 1920x1920, quality 85)
@@ -137,7 +151,7 @@ export class S3Service {
       Body: optimizedImage,
       ContentType: 'image/jpeg',
     })
-    await this.s3Client.send(imageCommand)
+    await this.s3Client!.send(imageCommand)
 
     // Upload thumbnail
     const thumbnailFileName = `portfolio/${artistId}/${fileId}_thumb.jpg`
@@ -147,7 +161,7 @@ export class S3Service {
       Body: thumbnail,
       ContentType: 'image/jpeg',
     })
-    await this.s3Client.send(thumbnailCommand)
+    await this.s3Client!.send(thumbnailCommand)
 
     return {
       imageUrl: `https://${this.bucketName}.s3.amazonaws.com/${imageFileName}`,
@@ -156,6 +170,7 @@ export class S3Service {
   }
 
   async deleteFile(fileUrl: string): Promise<void> {
+    this.checkConfiguration()
     // Extract key from URL
     const url = new URL(fileUrl)
     const key = url.pathname.substring(1) // Remove leading slash
@@ -165,13 +180,14 @@ export class S3Service {
       Key: key,
     })
 
-    await this.s3Client.send(command)
+    await this.s3Client!.send(command)
   }
 
   /**
    * Generic file upload method for any file type
    */
   async uploadFile(file: Express.Multer.File, folder: string): Promise<string> {
+    this.checkConfiguration()
     const fileExtension = file.originalname.split('.').pop()
     const fileName = `${folder}/${uuidv4()}.${fileExtension}`
 
@@ -182,7 +198,7 @@ export class S3Service {
       ContentType: file.mimetype,
     })
 
-    await this.s3Client.send(command)
+    await this.s3Client!.send(command)
     return `https://${this.bucketName}.s3.amazonaws.com/${fileName}`
   }
 }

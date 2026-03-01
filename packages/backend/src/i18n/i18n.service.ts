@@ -15,14 +15,28 @@ export class I18nService {
   private loadTranslations() {
     const translationsDir = path.join(__dirname, 'translations')
 
+    // Check if translations directory exists
+    if (!fs.existsSync(translationsDir)) {
+      console.warn('Translations directory not found. I18n will return keys as-is.')
+      return
+    }
+
     for (const lang of this.supportedLanguages) {
       const filePath = path.join(translationsDir, `${lang}.json`)
       try {
-        const content = fs.readFileSync(filePath, 'utf-8')
-        this.translations.set(lang, JSON.parse(content))
+        if (fs.existsSync(filePath)) {
+          const content = fs.readFileSync(filePath, 'utf-8')
+          this.translations.set(lang, JSON.parse(content))
+        } else {
+          console.warn(`Translation file not found for ${lang}: ${filePath}`)
+        }
       } catch (error) {
         console.error(`Failed to load translations for ${lang}:`, error)
       }
+    }
+
+    if (this.translations.size === 0) {
+      console.warn('No translations loaded. I18n will return keys as-is.')
     }
   }
 
