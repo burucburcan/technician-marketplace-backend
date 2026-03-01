@@ -3,6 +3,10 @@ import { ValidationPipe } from '@nestjs/common'
 import helmet from 'helmet'
 import { AppModule } from './app.module'
 import { getSecurityConfig } from './config/security.config'
+import * as dns from 'dns'
+
+// Force IPv4 DNS resolution globally
+dns.setDefaultResultOrder('ipv4first')
 
 async function bootstrap() {
   try {
