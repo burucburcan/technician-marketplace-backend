@@ -2,11 +2,23 @@ import { TypeOrmModuleOptions } from '@nestjs/typeorm'
 import { ConfigService } from '@nestjs/config'
 
 export const getDatabaseConfig = (configService: ConfigService): TypeOrmModuleOptions => {
-  // Set NODE_OPTIONS to prefer IPv4 DNS resolution
-  if (process.env.NODE_ENV === 'production' && !process.env.NODE_OPTIONS?.includes('dns-result-order')) {
-    process.env.NODE_OPTIONS = (process.env.NODE_OPTIONS || '') + ' --dns-result-order=ipv4first';
+  const databaseUrl = configService.get('DATABASE_URL');
+  
+  // If DATABASE_URL is provided, use it (for Neon, Railway, etc.)
+  if (databaseUrl) {
+    return {
+      type: 'postgres',
+      url: databaseUrl,
+      entities: [__dirname + '/../**/*.entity{.ts,.js}'],
+      synchronize: configService.get('NODE_ENV') !== 'production',
+      logging: configService.get('NODE_ENV') === 'development',
+      ssl: {
+        rejectUnauthorized: false,
+      },
+    };
   }
 
+  // Fallback to individual connection parameters
   return {
     type: 'postgres',
     host: configService.get('DB_HOST', 'localhost'),
@@ -17,10 +29,5 @@ export const getDatabaseConfig = (configService: ConfigService): TypeOrmModuleOp
     entities: [__dirname + '/../**/*.entity{.ts,.js}'],
     synchronize: configService.get('NODE_ENV') !== 'production',
     logging: configService.get('NODE_ENV') === 'development',
-    extra: process.env.NODE_ENV === 'production' ? {
-      connectionTimeoutMillis: 10000,
-      query_timeout: 10000,
-      statement_timeout: 10000,
-    } : undefined,
   };
 }
