@@ -15,7 +15,7 @@ export class StripeService {
     }
 
     this.stripe = new Stripe(apiKey || '', {
-      apiVersion: '2026-01-28.clover',
+      apiVersion: '2023-10-16',
       typescript: true,
     })
 
