@@ -1,32 +1,6 @@
 import { IsNotEmpty, IsNumber, IsString, IsEnum, IsOptional, IsObject } from 'class-validator'
 import { InvoiceType } from '../../../common/enums/invoice-type.enum'
 
-export class CreatePaymentIntentDto {
-  @IsNotEmpty()
-  @IsString()
-  bookingId?: string
-
-  @IsOptional()
-  @IsString()
-  orderId?: string
-
-  @IsNotEmpty()
-  @IsNumber()
-  amount: number
-
-  @IsNotEmpty()
-  @IsString()
-  currency: string
-
-  @IsNotEmpty()
-  @IsEnum(InvoiceType)
-  invoiceType: InvoiceType
-
-  @IsOptional()
-  @IsObject()
-  invoiceData?: InvoiceDataDto
-}
-
 export class InvoiceDataDto {
   @IsNotEmpty()
   @IsString()
@@ -55,4 +29,30 @@ export class InvoiceDataDto {
   @IsNotEmpty()
   @IsString()
   customerEmail: string
+}
+
+export class CreatePaymentIntentDto {
+  @IsNotEmpty()
+  @IsString()
+  bookingId?: string
+
+  @IsOptional()
+  @IsString()
+  orderId?: string
+
+  @IsNotEmpty()
+  @IsNumber()
+  amount: number
+
+  @IsNotEmpty()
+  @IsString()
+  currency: string
+
+  @IsNotEmpty()
+  @IsEnum(InvoiceType)
+  invoiceType: InvoiceType
+
+  @IsOptional()
+  @IsObject()
+  invoiceData?: InvoiceDataDto
 }
