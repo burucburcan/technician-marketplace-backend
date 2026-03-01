@@ -11,4 +11,8 @@ export const getDatabaseConfig = (configService: ConfigService): TypeOrmModuleOp
   entities: [__dirname + '/../**/*.entity{.ts,.js}'],
   synchronize: configService.get('NODE_ENV') !== 'production',
   logging: configService.get('NODE_ENV') === 'development',
+  extra: {
+    // Force IPv4 to avoid IPv6 connection issues on some platforms
+    family: 4,
+  },
 })
