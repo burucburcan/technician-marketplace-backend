@@ -9,10 +9,13 @@ export const HomePage = () => {
       <div className="max-w-7xl mx-auto py-16 px-4 sm:py-24 sm:px-6 lg:px-8">
         <div className="text-center">
           <h1 className="text-4xl font-extrabold text-gray-900 sm:text-5xl sm:tracking-tight lg:text-6xl">
-            Find Professional Services
+            e-MANO
           </h1>
+          <p className="mt-3 text-lg text-gray-600 font-medium">
+            Maestros Artesanos y Negociantes de Oficios Inc.
+          </p>
           <p className="mt-5 max-w-xl mx-auto text-xl text-gray-500">
-            Connect with qualified technicians and artists for your home and artistic projects
+            {t('home.subtitle')}
           </p>
           <div className="mt-8">
             <Link
