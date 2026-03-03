@@ -7,6 +7,7 @@
     "dev": "nest start --watch",
     "start": "nest start",
     "start:prod": "node dist/main",
+    "postinstall": "npm rebuild sharp --platform=linux --arch=x64",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "test": "jest",
     "test:watch": "jest --watch",
