@@ -7,7 +7,6 @@
     "dev": "nest start --watch",
     "start": "nest start",
     "start:prod": "node dist/main",
-    "postinstall": "npm rebuild sharp --platform=linux --arch=x64",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "test": "jest",
     "test:watch": "jest --watch",
@@ -54,12 +53,14 @@
     "redis": "^4.6.12",
     "reflect-metadata": "^0.2.1",
     "rxjs": "^7.8.1",
-    "sharp": "^0.33.2",
     "socket.io": "^4.6.1",
     "stripe": "^14.0.0",
     "twilio": "^5.0.0",
     "typeorm": "^0.3.19",
     "uuid": "^9.0.1"
+  },
+  "optionalDependencies": {
+    "sharp": "^0.33.2"
   },
   "devDependencies": {
     "@nestjs/cli": "^10.3.0",

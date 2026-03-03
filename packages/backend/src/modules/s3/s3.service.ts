@@ -8,7 +8,14 @@ import {
   ListObjectsV2Command,
 } from '@aws-sdk/client-s3'
 import { v4 as uuidv4 } from 'uuid'
-import * as sharp from 'sharp'
+
+// Optional sharp import - only needed for image optimization
+let sharp: any
+try {
+  sharp = require('sharp')
+} catch (e) {
+  console.warn('Sharp module not available. Image optimization features will be disabled.')
+}
 
 @Injectable()
 export class S3Service {
@@ -123,6 +130,11 @@ export class S3Service {
     file: Express.Multer.File
   ): Promise<{ imageUrl: string; thumbnailUrl: string }> {
     this.checkConfiguration()
+    
+    if (!sharp) {
+      throw new Error('Image optimization is not available. Sharp module is not installed.')
+    }
+    
     const fileId = uuidv4()
 
     // Optimize full-size image (max 1920x1920, quality 85)
