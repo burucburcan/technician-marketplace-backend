@@ -16,7 +16,7 @@ export const Header = () => {
           <div className="flex">
             <Link to="/" className="flex items-center">
               <span className="text-xl font-bold text-blue-600">
-                Technician Marketplace
+                e-MANO
               </span>
             </Link>
             <div className="hidden sm:ml-6 sm:flex sm:space-x-8">

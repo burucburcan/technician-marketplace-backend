@@ -4,7 +4,7 @@ export const Footer = () => {
       <div className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
         <div className="text-center">
           <p className="text-sm">
-            © 2024 Technician Marketplace. All rights reserved.
+            © 2024 e-MANO - Maestros Artesanos y Negociantes de Oficios Inc. Todos los derechos reservados.
           </p>
         </div>
       </div>
