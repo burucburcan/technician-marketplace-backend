@@ -10,7 +10,7 @@ export const getDatabaseConfig = (configService: ConfigService): TypeOrmModuleOp
       type: 'postgres',
       url: databaseUrl,
       entities: [__dirname + '/../**/*.entity{.ts,.js}'],
-      synchronize: configService.get('NODE_ENV') !== 'production',
+      synchronize: configService.get('DB_SYNCHRONIZE', 'true') === 'true',
       logging: configService.get('NODE_ENV') === 'development',
       ssl: {
         rejectUnauthorized: false,
@@ -27,7 +27,7 @@ export const getDatabaseConfig = (configService: ConfigService): TypeOrmModuleOp
     password: configService.get('DB_PASSWORD', 'postgres'),
     database: configService.get('DB_NAME', 'technician_marketplace'),
     entities: [__dirname + '/../**/*.entity{.ts,.js}'],
-    synchronize: configService.get('NODE_ENV') !== 'production',
+    synchronize: configService.get('DB_SYNCHRONIZE', 'true') === 'true',
     logging: configService.get('NODE_ENV') === 'development',
   };
 }
