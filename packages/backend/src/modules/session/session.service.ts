@@ -31,7 +31,14 @@ export class SessionService implements OnModuleInit, OnModuleDestroy {
 
   private async initRedis() {
     try {
-      const redisUrl = this.configService.get<string>('REDIS_URL') || 'redis://localhost:6379'
+      const redisUrl = this.configService.get<string>('REDIS_URL')
+      
+      // If no Redis URL is configured, skip Redis initialization
+      if (!redisUrl) {
+        this.logger.warn('Redis URL not configured, session management will be disabled')
+        return
+      }
+
       this.redisClient = createClient({ url: redisUrl })
 
       this.redisClient.on('error', err => {
@@ -41,8 +48,8 @@ export class SessionService implements OnModuleInit, OnModuleDestroy {
       await this.redisClient.connect()
       this.logger.log('Redis session store connected successfully')
     } catch (error) {
-      this.logger.error('Failed to connect to Redis for sessions:', error)
-      throw error
+      this.logger.error('Failed to connect to Redis for sessions, continuing without session management:', error)
+      this.redisClient = null
     }
   }
 
@@ -51,7 +58,8 @@ export class SessionService implements OnModuleInit, OnModuleDestroy {
    */
   async createSession(sessionId: string, sessionData: SessionData): Promise<void> {
     if (!this.redisClient) {
-      throw new Error('Redis client not initialized')
+      this.logger.warn('Redis client not available, session will not be persisted')
+      return
     }
 
     const key = this.getSessionKey(sessionId)
@@ -71,7 +79,8 @@ export class SessionService implements OnModuleInit, OnModuleDestroy {
    */
   async getSession(sessionId: string): Promise<SessionData | null> {
     if (!this.redisClient) {
-      throw new Error('Redis client not initialized')
+      this.logger.warn('Redis client not available, cannot retrieve session')
+      return null
     }
 
     const key = this.getSessionKey(sessionId)
@@ -95,7 +104,8 @@ export class SessionService implements OnModuleInit, OnModuleDestroy {
    */
   async deleteSession(sessionId: string): Promise<void> {
     if (!this.redisClient) {
-      throw new Error('Redis client not initialized')
+      this.logger.warn('Redis client not available, cannot delete session')
+      return
     }
 
     const key = this.getSessionKey(sessionId)
@@ -107,7 +117,8 @@ export class SessionService implements OnModuleInit, OnModuleDestroy {
    */
   async deleteUserSessions(userId: string): Promise<void> {
     if (!this.redisClient) {
-      throw new Error('Redis client not initialized')
+      this.logger.warn('Redis client not available, cannot delete user sessions')
+      return
     }
 
     // Find all session keys for this user
@@ -130,7 +141,8 @@ export class SessionService implements OnModuleInit, OnModuleDestroy {
    */
   async isSessionValid(sessionId: string): Promise<boolean> {
     if (!this.redisClient) {
-      throw new Error('Redis client not initialized')
+      this.logger.warn('Redis client not available, cannot validate session')
+      return false
     }
 
     const key = this.getSessionKey(sessionId)
@@ -143,7 +155,8 @@ export class SessionService implements OnModuleInit, OnModuleDestroy {
    */
   async getSessionTTL(sessionId: string): Promise<number> {
     if (!this.redisClient) {
-      throw new Error('Redis client not initialized')
+      this.logger.warn('Redis client not available, cannot get session TTL')
+      return -1
     }
 
     const key = this.getSessionKey(sessionId)
@@ -155,7 +168,8 @@ export class SessionService implements OnModuleInit, OnModuleDestroy {
    */
   async refreshSession(sessionId: string): Promise<void> {
     if (!this.redisClient) {
-      throw new Error('Redis client not initialized')
+      this.logger.warn('Redis client not available, cannot refresh session')
+      return
     }
 
     const key = this.getSessionKey(sessionId)
@@ -173,7 +187,8 @@ export class SessionService implements OnModuleInit, OnModuleDestroy {
    */
   async getUserSessions(userId: string): Promise<SessionData[]> {
     if (!this.redisClient) {
-      throw new Error('Redis client not initialized')
+      this.logger.warn('Redis client not available, cannot get user sessions')
+      return []
     }
 
     const pattern = `${this.SESSION_PREFIX}*`
