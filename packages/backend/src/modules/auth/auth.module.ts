@@ -7,13 +7,14 @@ import { AuthController } from './auth.controller'
 import { AuthService } from './auth.service'
 import { JwtStrategy } from './strategies/jwt.strategy'
 import { User } from '../../entities/user.entity'
+import { UserProfile } from '../../entities/user-profile.entity'
 import { UserLockout } from '../../entities/user-lockout.entity'
 import { ActivityLogModule } from '../activity-log/activity-log.module'
 import { SessionModule } from '../session/session.module'
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User, UserLockout]),
+    TypeOrmModule.forFeature([User, UserProfile, UserLockout]),
     ActivityLogModule,
     SessionModule,
     PassportModule,

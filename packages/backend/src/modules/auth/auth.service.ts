@@ -11,6 +11,7 @@ import { Repository, MoreThan } from 'typeorm'
 import { JwtService } from '@nestjs/jwt'
 import * as bcrypt from 'bcrypt'
 import { User } from '../../entities/user.entity'
+import { UserProfile } from '../../entities/user-profile.entity'
 import { UserLockout } from '../../entities/user-lockout.entity'
 import { RegisterDto, LoginDto } from './dto'
 import { UserRole } from '../../common/enums'
@@ -25,6 +26,8 @@ export class AuthService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    @InjectRepository(UserProfile)
+    private readonly userProfileRepository: Repository<UserProfile>,
     @InjectRepository(UserLockout)
     private readonly userLockoutRepository: Repository<UserLockout>,
     private readonly jwtService: JwtService,
@@ -33,7 +36,7 @@ export class AuthService {
   ) {}
 
   async register(registerDto: RegisterDto) {
-    const { email, password, role } = registerDto
+    const { email, password, firstName, lastName, role } = registerDto
 
     // Check if user already exists
     const existingUser = await this.userRepository.findOne({
@@ -56,6 +59,34 @@ export class AuthService {
     })
 
     await this.userRepository.save(user)
+
+    // Create user profile
+    const userProfile = this.userProfileRepository.create({
+      userId: user.id,
+      firstName,
+      lastName,
+      phone: '', // Will be updated later by user
+      language: 'es', // Default language
+      location: {
+        address: '',
+        city: '',
+        state: '',
+        country: '',
+        postalCode: '',
+        coordinates: {
+          latitude: 0,
+          longitude: 0,
+        },
+      },
+      preferences: {
+        emailNotifications: true,
+        smsNotifications: false,
+        pushNotifications: true,
+        currency: 'MXN',
+      },
+    })
+
+    await this.userProfileRepository.save(userProfile)
 
     // Generate email verification token
     const verificationToken = this.generateEmailVerificationToken(user.id)
