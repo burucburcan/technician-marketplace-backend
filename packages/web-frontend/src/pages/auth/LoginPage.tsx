@@ -31,7 +31,7 @@ export const LoginPage = () => {
       </h2>
       {error && (
         <div className="mb-4 bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded">
-          Login failed. Please check your credentials.
+          {t('auth.loginFailed')}
         </div>
       )}
       <form className="space-y-6" onSubmit={handleSubmit}>

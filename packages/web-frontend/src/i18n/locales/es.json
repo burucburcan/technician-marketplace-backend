@@ -33,7 +33,18 @@
     "forgotPassword": "¿Olvidaste tu contraseña?",
     "noAccount": "¿No tienes cuenta?",
     "hasAccount": "¿Ya tienes cuenta?",
-    "verifyEmail": "Verificar correo electrónico"
+    "verifyEmail": "Verificar correo electrónico",
+    "firstName": "Nombre",
+    "lastName": "Apellido",
+    "registerFailed": "El registro falló. Por favor, inténtalo de nuevo.",
+    "loginFailed": "Inicio de sesión fallido. Verifica tus credenciales.",
+    "passwordsDoNotMatch": "Las contraseñas no coinciden",
+    "emailPlaceholder": "ejemplo@correo.com",
+    "minPasswordLength": "Mínimo 8 caracteres",
+    "invalidEmail": "Ingresa un correo electrónico válido",
+    "passwordTooShort": "La contraseña debe tener al menos 8 caracteres",
+    "firstNameRequired": "El nombre es obligatorio",
+    "lastNameRequired": "El apellido es obligatorio"
   },
   "professional": {
     "handyman": "Técnico",

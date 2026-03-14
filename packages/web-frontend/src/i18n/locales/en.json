@@ -33,7 +33,18 @@
     "forgotPassword": "Forgot password?",
     "noAccount": "Don't have an account?",
     "hasAccount": "Already have an account?",
-    "verifyEmail": "Verify email"
+    "verifyEmail": "Verify email",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "registerFailed": "Registration failed. Please try again.",
+    "loginFailed": "Login failed. Please check your credentials.",
+    "passwordsDoNotMatch": "Passwords do not match",
+    "emailPlaceholder": "example@email.com",
+    "minPasswordLength": "Minimum 8 characters",
+    "invalidEmail": "Enter a valid email address",
+    "passwordTooShort": "Password must be at least 8 characters",
+    "firstNameRequired": "First name is required",
+    "lastNameRequired": "Last name is required"
   },
   "professional": {
     "handyman": "Handyman",
