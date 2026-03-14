@@ -1,5 +1,5 @@
 {
-  "buildCommand": "tsc && vite build",
+  "buildCommand": "vite build",
   "outputDirectory": "dist",
   "installCommand": "npm install --prefix=../..",
   "rewrites": [
