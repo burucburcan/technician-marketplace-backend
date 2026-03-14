@@ -11,13 +11,24 @@ import { ConversationSchema, ActivityLogSchema } from '../../schemas'
       provide: 'MONGODB_CONNECTION',
       useFactory: async (configService: ConfigService) => {
         const uri = getMongoConfig(configService)
-        return mongoose.connect(uri)
+        // If no MongoDB URI is configured, return null instead of connecting
+        if (!configService.get('MONGODB_URI')) {
+          console.log('MongoDB not configured. Skipping connection.')
+          return null
+        }
+        try {
+          return await mongoose.connect(uri)
+        } catch (error) {
+          console.error('MongoDB connection failed:', error.message)
+          return null
+        }
       },
       inject: [ConfigService],
     },
     {
       provide: 'CONVERSATION_MODEL',
       useFactory: (connection: typeof mongoose) => {
+        if (!connection) return null
         return connection.model('Conversation', ConversationSchema)
       },
       inject: ['MONGODB_CONNECTION'],
@@ -25,6 +36,7 @@ import { ConversationSchema, ActivityLogSchema } from '../../schemas'
     {
       provide: 'ACTIVITY_LOG_MODEL',
       useFactory: (connection: typeof mongoose) => {
+        if (!connection) return null
         return connection.model('ActivityLog', ActivityLogSchema)
       },
       inject: ['MONGODB_CONNECTION'],

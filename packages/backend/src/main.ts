@@ -15,6 +15,9 @@ async function bootstrap() {
     })
     const securityConfig = getSecurityConfig()
 
+    // Set global API prefix
+    app.setGlobalPrefix('api')
+
     // Apply Helmet security headers
     app.use(
       helmet({
