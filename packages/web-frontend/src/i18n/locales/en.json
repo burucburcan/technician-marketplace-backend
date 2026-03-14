@@ -41,6 +41,8 @@
     "passwordsDoNotMatch": "Passwords do not match",
     "emailPlaceholder": "example@email.com",
     "minPasswordLength": "Minimum 8 characters",
+    "uppercaseRequired": "Must include at least one uppercase letter",
+    "passwordRequirements": "Password requirements:",
     "invalidEmail": "Enter a valid email address",
     "passwordTooShort": "Password must be at least 8 characters",
     "firstNameRequired": "First name is required",

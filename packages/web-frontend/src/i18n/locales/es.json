@@ -41,6 +41,8 @@
     "passwordsDoNotMatch": "Las contraseñas no coinciden",
     "emailPlaceholder": "ejemplo@correo.com",
     "minPasswordLength": "Mínimo 8 caracteres",
+    "uppercaseRequired": "Debe incluir al menos una letra mayúscula",
+    "passwordRequirements": "Requisitos de contraseña:",
     "invalidEmail": "Ingresa un correo electrónico válido",
     "passwordTooShort": "La contraseña debe tener al menos 8 caracteres",
     "firstNameRequired": "El nombre es obligatorio",

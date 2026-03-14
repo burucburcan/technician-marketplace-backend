@@ -26,6 +26,8 @@ export const RegisterPage = () => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(formData.email)) errors.email = t('auth.invalidEmail');
     if (formData.password.length < 8) errors.password = t('auth.passwordTooShort');
+    if (!/[A-Z]/.test(formData.password)) errors.password = t('auth.uppercaseRequired');
+    if (formData.password.length < 8 && !/[A-Z]/.test(formData.password)) errors.password = t('auth.passwordTooShort') + ' / ' + t('auth.uppercaseRequired');
     if (formData.password !== formData.confirmPassword) errors.confirmPassword = t('auth.passwordsDoNotMatch');
     setValidationErrors(errors);
     return Object.keys(errors).length === 0;
@@ -48,8 +50,10 @@ export const RegisterPage = () => {
     }
   };
 
+  const [showPasswordTip, setShowPasswordTip] = useState(false);
   const passwordLength = formData.password.length;
   const passwordMeetsMin = passwordLength >= 8;
+  const passwordHasUpper = /[A-Z]/.test(formData.password);
   const passwordsMatch = formData.confirmPassword.length > 0 && formData.password === formData.confirmPassword;
   const passwordsMismatch = formData.confirmPassword.length > 0 && formData.password !== formData.confirmPassword;
 
@@ -124,24 +128,39 @@ export const RegisterPage = () => {
             <p className="mt-1 text-red-500 text-sm">{validationErrors.email}</p>
           )}
         </div>
-        <div>
+        <div className="relative">
           <label className="block text-sm font-medium text-gray-700">
             {t('auth.password')}
           </label>
-          <input
-            type="password"
-            required
-            value={formData.password}
-            onChange={(e) => {
-              setFormData({ ...formData, password: e.target.value });
-              if (validationErrors.password) setValidationErrors(prev => ({ ...prev, password: '' }));
-            }}
-            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3"
-            data-testid="password-input"
-          />
-          <p className={`mt-1 text-sm ${passwordLength === 0 ? 'text-gray-400' : passwordMeetsMin ? 'text-green-600' : 'text-red-500'}`}>
-            {t('auth.minPasswordLength')} ({passwordLength}/8)
-          </p>
+          <div className="relative">
+            <input
+              type="password"
+              required
+              value={formData.password}
+              onFocus={() => setShowPasswordTip(true)}
+              onBlur={() => setShowPasswordTip(false)}
+              onChange={(e) => {
+                setFormData({ ...formData, password: e.target.value });
+                if (validationErrors.password) setValidationErrors(prev => ({ ...prev, password: '' }));
+              }}
+              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3"
+              data-testid="password-input"
+            />
+            {showPasswordTip && (
+              <div className="absolute left-full top-0 ml-3 w-56 bg-gray-800 text-white text-xs rounded-lg p-3 shadow-lg z-10">
+                <p className="font-semibold mb-2">{t('auth.passwordRequirements')}</p>
+                <div className="space-y-1">
+                  <p className={`flex items-center gap-1 ${passwordMeetsMin ? 'text-green-400' : 'text-gray-300'}`}>
+                    {passwordMeetsMin ? '✓' : '○'} {t('auth.minPasswordLength')}
+                  </p>
+                  <p className={`flex items-center gap-1 ${passwordHasUpper ? 'text-green-400' : 'text-gray-300'}`}>
+                    {passwordHasUpper ? '✓' : '○'} {t('auth.uppercaseRequired')}
+                  </p>
+                </div>
+                <div className="absolute right-full top-3 w-0 h-0 border-t-[6px] border-t-transparent border-r-[6px] border-r-gray-800 border-b-[6px] border-b-transparent"></div>
+              </div>
+            )}
+          </div>
           {validationErrors.password && (
             <p className="mt-1 text-red-500 text-sm">{validationErrors.password}</p>
           )}
