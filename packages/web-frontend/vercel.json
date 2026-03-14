@@ -1,7 +1,7 @@
 {
   "buildCommand": "vite build",
   "outputDirectory": "dist",
-  "installCommand": "npm install --prefix=../..",
+  "installCommand": "cd ../.. && npm install --no-optional && npm install @rollup/rollup-linux-x64-gnu",
   "rewrites": [
     {
       "source": "/(.*)",
