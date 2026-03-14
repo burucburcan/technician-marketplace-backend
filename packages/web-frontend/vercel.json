@@ -1,4 +1,7 @@
 {
+  "buildCommand": "tsc && vite build",
+  "outputDirectory": "dist",
+  "installCommand": "npm install --prefix=../..",
   "rewrites": [
     {
       "source": "/(.*)",
