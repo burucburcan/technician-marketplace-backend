@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import { useRegisterMutation } from '../../store/api/authApi';
 import { setCredentials } from '../../store/slices/authSlice';
+import { RoleSelector } from '../../components/auth/RoleSelector';
 
 export const RegisterPage = () => {
   const { t } = useTranslation();
@@ -16,11 +17,13 @@ export const RegisterPage = () => {
     confirmPassword: '',
     firstName: '',
     lastName: '',
+    role: null as 'professional' | 'user' | null,
   });
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
 
   const validateForm = (): boolean => {
     const errors: Record<string, string> = {};
+    if (!formData.role) errors.role = t('auth.roleSelection.required');
     if (!formData.firstName.trim()) errors.firstName = t('auth.firstNameRequired');
     if (!formData.lastName.trim()) errors.lastName = t('auth.lastNameRequired');
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -42,9 +45,18 @@ export const RegisterPage = () => {
         password: formData.password,
         firstName: formData.firstName,
         lastName: formData.lastName,
+        role: formData.role || undefined,
       }).unwrap();
       dispatch(setCredentials({ user: result.user, token: result.accessToken }));
-      navigate('/auth/verify-email');
+      if (!result.user.isEmailVerified) {
+        navigate('/auth/verify-email');
+      } else if (result.user.role === 'professional') {
+        navigate('/professional');
+      } else if (result.user.role === 'user') {
+        navigate('/user');
+      } else {
+        navigate('/auth/verify-email');
+      }
     } catch (err) {
       console.error('Registration failed:', err);
     }
@@ -68,6 +80,14 @@ export const RegisterPage = () => {
         </div>
       )}
       <form className="space-y-6" onSubmit={handleSubmit}>
+        <RoleSelector
+          selectedRole={formData.role}
+          onRoleSelect={(role) => {
+            setFormData({ ...formData, role });
+            if (validationErrors.role) setValidationErrors(prev => ({ ...prev, role: '' }));
+          }}
+          error={validationErrors.role}
+        />
         <div className="grid grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700">
@@ -189,7 +209,7 @@ export const RegisterPage = () => {
         </div>
         <button
           type="submit"
-          disabled={isLoading}
+          disabled={isLoading || !formData.role}
           className="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50"
           data-testid="register-button"
         >

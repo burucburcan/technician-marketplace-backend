@@ -11,7 +11,9 @@ interface RegisterRequest {
   password: string;
   firstName: string;
   lastName: string;
+  role?: 'professional' | 'user';
 }
+
 
 interface AuthResponse {
   accessToken: string;

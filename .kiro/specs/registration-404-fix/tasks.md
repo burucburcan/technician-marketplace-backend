@@ -1,0 +1,126 @@
+# Implementation Plan
+
+- [ ] 1. Write bug condition exploration test
+  - **Property 1: Fault Condition** - Registration Request Routing Failure
+  - **CRITICAL**: This test MUST FAIL on unfixed code - failure confirms the bug exists
+  - **DO NOT attempt to fix the test or the code when it fails**
+  - **NOTE**: This test encodes the expected behavior - it will validate the fix when it passes after implementation
+  - **GOAL**: Surface counterexamples that demonstrate the bug exists
+  - **Scoped PBT Approach**: Scope the property to registration POST requests with valid data
+  - Test that registration requests construct the correct URL: `https://technician-marketplacebackend-production.up.railway.app/api/auth/register`
+  - Test that registration requests with valid data receive 201 response (not 404)
+  - Test implementation details from Fault Condition in design:
+    - Verify constructed URL includes `/api/auth/register` path
+    - Verify constructed URL includes Railway domain
+    - Verify response status is NOT 404
+  - The test assertions should match the Expected Behavior Properties from design
+  - Run test on UNFIXED deployment
+  - **EXPECTED OUTCOME**: Test FAILS (this is correct - it proves the bug exists)
+  - Document counterexamples found:
+    - Actual request URL constructed (e.g., `/auth/register`, `localhost:5173/api/auth/register`)
+    - Value of `import.meta.env.VITE_API_URL` in browser console
+    - Response status code received
+  - Examine failures to understand root cause (environment variable not loaded, build cache, etc.)
+  - Mark task complete when test is written, run, and failure is documented
+  - _Requirements: 2.1, 2.2, 2.3_
+
+- [ ] 2. Write preservation property tests (BEFORE implementing fix)
+  - **Property 2: Preservation** - Other Endpoint Behavior
+  - **IMPORTANT**: Follow observation-first methodology
+  - Observe behavior on UNFIXED deployment for non-registration requests:
+    - Test login endpoint (`/api/auth/login`) - observe it works correctly
+    - Test other API endpoints (user profile, bookings) - observe they work correctly
+    - Document the observed behavior patterns
+  - Write property-based tests capturing observed behavior patterns from Preservation Requirements:
+    - For all login requests, verify URL construction and successful authentication
+    - For all other API requests (NOT registration), verify correct routing and responses
+    - Verify CORS configuration continues to work
+    - Verify authentication token handling remains unchanged
+  - Property-based testing generates many test cases for stronger guarantees
+  - Run tests on UNFIXED deployment
+  - **EXPECTED OUTCOME**: Tests PASS (this confirms baseline behavior to preserve)
+  - Mark task complete when tests are written, run, and passing on unfixed deployment
+  - _Requirements: 3.1, 3.2, 3.3, 3.4, 3.5_
+
+- [ ] 3. Fix for registration 404 error
+
+  - [x] 3.1 Verify and configure Railway environment variables
+    - Navigate to Railway project settings for web-frontend service
+    - Add or verify `VITE_API_URL=https://technician-marketplacebackend-production.up.railway.app` in environment variables
+    - Ensure the variable is available during build time (not just runtime)
+    - Document the current state of environment variables
+    - _Bug_Condition: isBugCondition(input) where input.endpoint == 'register' AND constructedUrl does NOT include correct Railway domain_
+    - _Expected_Behavior: Registration requests construct URL with full Railway domain and /api prefix_
+    - _Preservation: Login and other API endpoints continue to work correctly_
+    - _Requirements: 2.1, 2.2, 2.3, 3.1, 3.2, 3.3, 3.4, 3.5_
+
+  - [x] 3.2 Add build-time validation for VITE_API_URL
+    - Add validation in `packages/web-frontend/vite.config.ts` to check VITE_API_URL is defined
+    - Fail the build if VITE_API_URL is missing or empty
+    - Add helpful error message indicating how to set the variable
+    - This prevents deploying broken builds in the future
+    - _Bug_Condition: Prevents builds where VITE_API_URL is undefined_
+    - _Expected_Behavior: Build fails early with clear error if environment variable is missing_
+    - _Preservation: Does not affect runtime behavior of existing endpoints_
+    - _Requirements: 2.1, 2.2_
+
+  - [x] 3.3 Add defensive checks to baseUrl construction
+    - Update `packages/web-frontend/src/store/api.ts` to validate VITE_API_URL
+    - Add fallback or throw error if VITE_API_URL is undefined at runtime
+    - Add development-mode logging to show constructed baseUrl
+    - Consider adding runtime assertion to catch configuration issues early
+    - _Bug_Condition: Handles cases where VITE_API_URL might be undefined_
+    - _Expected_Behavior: Clear error message or fallback behavior instead of silent failure_
+    - _Preservation: Existing endpoints continue to use correct baseUrl_
+    - _Requirements: 2.1, 2.2, 2.3_
+
+  - [x] 3.4 Clear build cache and trigger fresh deployment
+    - In Railway dashboard, trigger a new deployment with cache cleared
+    - Alternatively, add a dummy commit to force rebuild
+    - Monitor build logs to verify VITE_API_URL is loaded during build
+    - Verify the built bundle includes the correct baseUrl value
+    - _Bug_Condition: Ensures fresh build without cached incorrect configuration_
+    - _Expected_Behavior: New build includes correct VITE_API_URL value_
+    - _Preservation: Does not affect backend or other services_
+    - _Requirements: 2.1, 2.2, 2.3_
+
+  - [x] 3.5 Verify URL construction in deployed frontend
+    - Open deployed frontend in browser
+    - Open DevTools Network tab
+    - Submit registration form with test data
+    - Verify request URL is `https://technician-marketplacebackend-production.up.railway.app/api/auth/register`
+    - Check console for any baseUrl logging added in step 3.3
+    - _Bug_Condition: Confirms the fix resolves the URL construction issue_
+    - _Expected_Behavior: Correct URL is constructed and request succeeds with 201_
+    - _Preservation: Other API requests continue to work correctly_
+    - _Requirements: 2.1, 2.2, 2.3_
+
+  - [x] 3.6 Verify bug condition exploration test now passes
+    - **Property 1: Expected Behavior** - Registration Request Routing Success
+    - **IMPORTANT**: Re-run the SAME test from task 1 - do NOT write a new test
+    - The test from task 1 encodes the expected behavior
+    - When this test passes, it confirms the expected behavior is satisfied
+    - Run bug condition exploration test from step 1 on FIXED deployment
+    - **EXPECTED OUTCOME**: Test PASSES (confirms bug is fixed)
+    - Verify registration requests construct correct URL
+    - Verify registration requests receive 201 response with user data and tokens
+    - _Requirements: 2.1, 2.2, 2.3_
+
+  - [ ] 3.7 Verify preservation tests still pass
+    - **Property 2: Preservation** - Other Endpoint Behavior Unchanged
+    - **IMPORTANT**: Re-run the SAME tests from task 2 - do NOT write new tests
+    - Run preservation property tests from step 2 on FIXED deployment
+    - **EXPECTED OUTCOME**: Tests PASS (confirms no regressions)
+    - Verify login endpoint continues to work correctly
+    - Verify other API endpoints continue to work correctly
+    - Verify CORS and authentication remain unchanged
+    - Confirm all tests still pass after fix (no regressions)
+    - _Requirements: 3.1, 3.2, 3.3, 3.4, 3.5_
+
+- [ ] 4. Checkpoint - Ensure all tests pass
+  - Run all exploration and preservation tests on fixed deployment
+  - Verify registration flow works end-to-end
+  - Verify login and other API endpoints continue to work
+  - Test with multiple registration attempts to ensure consistency
+  - Check Railway logs for any errors or warnings
+  - If any issues arise, document them and ask the user for guidance

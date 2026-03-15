@@ -34,3 +34,7 @@ Thumbs.db
 .turbo
 .vercel
 .env*.local
+
+# Sensitive docs
+DEPLOYMENT_ENV_TEMPLATE.md
+JWT_SECRETS.txt

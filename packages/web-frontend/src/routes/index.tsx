@@ -18,6 +18,7 @@ import { ProfessionalDetailPage } from '../pages/ProfessionalDetailPage';
 import { UserDashboardPage } from '../pages/user/DashboardPage';
 import { UserBookingsPage } from '../pages/user/BookingsPage';
 import { UserProfilePage } from '../pages/user/ProfilePage';
+import { ClientProfilePage } from '../pages/user/ClientProfilePage';
 
 // Professional pages
 import { ProfessionalDashboardPage } from '../pages/professional/DashboardPage';
@@ -38,6 +39,7 @@ import { AdminPortfoliosPage } from '../pages/admin/PortfoliosPage';
 import { AdminDisputesPage } from '../pages/admin/DisputesPage';
 
 // Shared pages
+import { DashboardRedirect } from '../components/DashboardRedirect';
 import { BookingDetailPage } from '../pages/BookingDetailPage';
 import { PaymentPage } from '../pages/PaymentPage';
 import { MessagesPage } from '../pages/MessagesPage';
@@ -75,6 +77,7 @@ export const router = createBrowserRouter([
       { index: true, element: <UserDashboardPage /> },
       { path: 'bookings', element: <UserBookingsPage /> },
       { path: 'profile', element: <UserProfilePage /> },
+      { path: 'client-profile', element: <ClientProfilePage /> },
     ],
   },
   {
@@ -106,5 +109,9 @@ export const router = createBrowserRouter([
       { path: 'portfolios', element: <AdminPortfoliosPage /> },
       { path: 'disputes', element: <AdminDisputesPage /> },
     ],
+  },
+  {
+    path: '/dashboard',
+    element: <DashboardRedirect />,
   },
 ]);

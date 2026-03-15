@@ -27,6 +27,14 @@
     "dashboard": "Panel"
   },
   "auth": {
+    "roleSelection": {
+      "title": "Selecciona tu tipo de perfil",
+      "professional": "Profesional",
+      "professionalDescription": "Ofrece tus servicios como técnico o artista",
+      "client": "Cliente",
+      "clientDescription": "Busca y contrata profesionales para tus proyectos",
+      "required": "Debes seleccionar un tipo de perfil"
+    },
     "email": "Correo electrónico",
     "password": "Contraseña",
     "confirmPassword": "Confirmar contraseña",
@@ -213,6 +221,23 @@
     "updateError": "Error al actualizar el perfil",
     "personalInfo": "Información personal",
     "preferences": "Preferencias"
+  },
+  "clientProfile": {
+    "title": "Mi Perfil de Cliente",
+    "address": "Dirección",
+    "street": "Calle",
+    "city": "Ciudad",
+    "state": "Estado",
+    "postalCode": "Código postal",
+    "preferredServices": "Servicios preferidos",
+    "contactPhone": "Teléfono de contacto",
+    "bookingHistory": "Historial de reservaciones",
+    "totalBookings": "Total",
+    "completedBookings": "Completadas",
+    "cancelledBookings": "Canceladas",
+    "pendingBookings": "Pendientes",
+    "profileUpdated": "Perfil actualizado exitosamente",
+    "updateError": "Error al actualizar el perfil"
   },
   "notifications": {
     "notifications": "Notificaciones",

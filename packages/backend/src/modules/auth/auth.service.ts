@@ -2,6 +2,7 @@ import {
   Injectable,
   ConflictException,
   UnauthorizedException,
+  BadRequestException,
 } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
@@ -24,6 +25,12 @@ export class AuthService {
 
   async register(registerDto: RegisterDto) {
     const { email, password, firstName, lastName, role } = registerDto
+
+    // Validate role for public registration
+    const allowedPublicRoles = [UserRole.PROFESSIONAL, UserRole.USER]
+    if (role && !allowedPublicRoles.includes(role)) {
+      throw new BadRequestException('Invalid role for public registration')
+    }
 
     // Check if user already exists
     const existingUser = await this.userRepository.findOne({

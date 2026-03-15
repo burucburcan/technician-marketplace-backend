@@ -27,6 +27,14 @@
     "dashboard": "Dashboard"
   },
   "auth": {
+    "roleSelection": {
+      "title": "Select your profile type",
+      "professional": "Professional",
+      "professionalDescription": "Offer your services as a technician or artist",
+      "client": "Client",
+      "clientDescription": "Find and hire professionals for your projects",
+      "required": "You must select a profile type"
+    },
     "email": "Email",
     "password": "Password",
     "confirmPassword": "Confirm password",
@@ -213,6 +221,23 @@
     "updateError": "Error updating profile",
     "personalInfo": "Personal information",
     "preferences": "Preferences"
+  },
+  "clientProfile": {
+    "title": "My Client Profile",
+    "address": "Address",
+    "street": "Street",
+    "city": "City",
+    "state": "State",
+    "postalCode": "Postal Code",
+    "preferredServices": "Preferred Services",
+    "contactPhone": "Contact Phone",
+    "bookingHistory": "Booking History",
+    "totalBookings": "Total",
+    "completedBookings": "Completed",
+    "cancelledBookings": "Cancelled",
+    "pendingBookings": "Pending",
+    "profileUpdated": "Profile updated successfully",
+    "updateError": "Error updating profile"
   },
   "notifications": {
     "notifications": "Notifications",
