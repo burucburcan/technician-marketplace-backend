@@ -32,6 +32,26 @@
       "destination": "/.well-known/$1"
     },
     {
+      "source": "/(.*).png",
+      "destination": "/$1.png"
+    },
+    {
+      "source": "/(.*).ico",
+      "destination": "/$1.ico"
+    },
+    {
+      "source": "/(.*).svg",
+      "destination": "/$1.svg"
+    },
+    {
+      "source": "/(.*).js",
+      "destination": "/$1.js"
+    },
+    {
+      "source": "/(.*).css",
+      "destination": "/$1.css"
+    },
+    {
       "source": "/(.*)",
       "destination": "/index.html"
     }
