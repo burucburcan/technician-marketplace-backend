@@ -1,0 +1,14 @@
+[
+    {
+        "relation": [
+            "delegate_permission/common.handle_all_urls"
+        ],
+        "target": {
+            "namespace": "android_app",
+            "package_name": "com.emano.app",
+            "sha256_cert_fingerprints": [
+                "E4:76:E0:38:56:AD:43:D6:B0:6E:1A:69:70:24:61:F7:9A:B0:DF:17:3A:C0:A7:14:92:3D:B8:DB:A9:BB:C7:3E"
+            ]
+        }
+    }
+]
