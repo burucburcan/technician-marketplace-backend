@@ -2,7 +2,35 @@
   "buildCommand": "vite build",
   "outputDirectory": "dist",
   "installCommand": "cd ../.. && npm install --no-optional && npm install @rollup/rollup-linux-x64-gnu",
+  "headers": [
+    {
+      "source": "/manifest.webmanifest",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "application/manifest+json"
+        }
+      ]
+    },
+    {
+      "source": "/.well-known/assetlinks.json",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "application/json"
+        }
+      ]
+    }
+  ],
   "rewrites": [
+    {
+      "source": "/manifest.webmanifest",
+      "destination": "/manifest.webmanifest"
+    },
+    {
+      "source": "/.well-known/(.*)",
+      "destination": "/.well-known/$1"
+    },
     {
       "source": "/(.*)",
       "destination": "/index.html"
